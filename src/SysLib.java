@@ -1,6 +1,6 @@
 import java.util.*;
 
-public class SysLib {
+public class SysLib{
     public static int exec( String args[] ) {
         return Kernel.interrupt( Kernel.INTERRUPT_SOFTWARE,
 				 Kernel.EXEC, 0, args );
