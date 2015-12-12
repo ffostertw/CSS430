@@ -40,7 +40,7 @@ public class Inode{
 
         count = SysLib.bytes2short(info, offset);
         offset += 2;
-         d
+
         flag = SysLib.bytes2short(info, offset);
         offset += 2;
 
