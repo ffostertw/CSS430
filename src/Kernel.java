@@ -51,6 +51,9 @@ public final static int STDERR = 2;
 public final static int OK = 0;
 public final static int ERROR = -1;
 
+//File System
+private static FileSystem fileSystem;
+
 // System thread references
 private static Scheduler scheduler;
 private static Disk disk;
@@ -88,6 +91,9 @@ case INTERRUPT_SOFTWARE: // System calls
     // instantiate synchronized queues
     ioQueue = new SyncQueue( );
     waitQueue = new SyncQueue( scheduler.getMaxThreads( ) );
+
+    //instantiate the File System
+        fileSystem = new FileSystem(1000);
     return OK;
     case EXEC:
     return sysExec( ( String[] )args );
@@ -189,17 +195,30 @@ case INTERRUPT_SOFTWARE: // System calls
         break;
     }
     return OK;
-    case CREAD:   // to be implemented in assignment 4
+    case CREAD:
     return cache.read( param, ( byte[] )args ) ? OK : ERROR;
-    case CWRITE:  // to be implemented in assignment 4
+    case CWRITE:
     return cache.write( param, ( byte[] )args ) ? OK : ERROR;
-    case CSYNC:   // to be implemented in assignment 4
+    case CSYNC:
     cache.sync( );
     return OK;
-    case CFLUSH:  // to be implemented in assignment 4
+    case CFLUSH:
     cache.flush( );
     return OK;
-    case OPEN:    // to be implemented in project
+
+    /*implementation starts HERE:
+    Final Project: modify the open, close, size, seek, format, delete
+    Calling functions in Filesystem.
+    */
+    case OPEN:
+        myTcb = scheduler.getMyTcb();
+        if(myTcb == null){
+            return ERROR;
+        }
+        else{
+            //need to modify!
+
+        }
     return OK;
     case CLOSE:   // to be implemented in project
     return OK;
@@ -213,6 +232,8 @@ case INTERRUPT_SOFTWARE: // System calls
     return OK;
     }
     return ERROR;
+
+
 case INTERRUPT_DISK: // Disk interrupts
     // wake up the thread waiting for a service completion
     ioQueue.dequeueAndWakeup( COND_DISK_FIN );
@@ -282,3 +303,4 @@ catch ( InvocationTargetException e ) {
 }
 }
 }
+
