@@ -91,4 +91,78 @@ public class Inode
         SysLib.rawwrite(bNumber, newInfo);
 
     }
+
+    public byte[] delIndexBlock(){
+        byte[] data = new byte[Disk.blockSize];
+        if(indirect < 0){
+            return null;
+        }else{
+            SysLib.rawread(indirect, data);
+            indirect = -1;
+            return data;
+        }
+    }
+
+    public boolean setIndexBlockUsed(short inum){
+        byte[] data = new byte[Disk.blockSize];
+        if(indirect != -1){
+            return false;
+        }
+        for(int i = 0; i < 11; i++){
+            if(direct[i] == -1){
+                return false;
+            }
+        }
+        indirect = inum;
+
+        for(int i = 0; i< Disk.blockSize/2 ; i++){
+            SysLib.short2bytes((short)-1, data, i+i);
+
+        }
+
+        SysLib.rawwrite(inum, data);
+        return true;
+    }
+    public int setTargetBlockUsed(short blocknumber, int inumber){
+        if(indirect < 0){
+            return -2;
+        }
+        if((inumber/ Disk.blockSize) < 11){
+            if((inumber/ Disk.blockSize) > 0 &&
+                    direct[(inumber/ Disk.blockSize)-1] == -1){
+                return -1;
+            }
+            else if(direct[(inumber/ Disk.blockSize)] > 0){
+                return -1;
+            }
+            else{
+                direct[(inumber/ Disk.blockSize)] = blocknumber;
+                return 0;
+            }
+        }
+
+        //read data from disk
+        byte[] data = new byte[Disk.blockSize];
+        SysLib.rawread(indirect, data);
+        int block = (inumber/ Disk.blockSize) - 11;
+
+        if(SysLib.bytes2short(data, block + block) > 0){
+            return -1;
+        }
+        SysLib.short2bytes(blocknumber, data, block+block);
+        SysLib.rawwrite(indirect, data);
+        return 0;
+    }
+    public int findBlock(int block){
+        if((block/Disk.blockSize) < 11){
+            return direct[block/Disk.blockSize];
+        }
+
+        if(!(indirect < 0)){
+            byte[] data = new byte[Disk.blockSize];
+            SysLib.rawread(indirect, data);
+            return SysLib.bytes2short(data, 2* (block/Disk.blockSize)- 11);
+        }
+        return -1;
+    }
 }
