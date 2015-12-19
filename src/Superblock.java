@@ -34,7 +34,7 @@ public class SuperBlock
         byte[] info = new byte[Disk.blockSize];
 
         // Format inodes
-        totalInodes = DEFAULT_TOTAL_INODES;
+        totalInodes = size;
         for (int i = 0; i < totalInodes; ++i)
         {
             // Reset inode in disk
