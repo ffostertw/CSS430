@@ -1,5 +1,5 @@
 
-public class Superblock
+public class SuperBlock
 {
     private final int DEFAULT_TOTAL_INODES = 64;
     private final int INODE_SIZE = 32;
@@ -26,11 +26,10 @@ public class Superblock
 
         if (totalInodes <= 0 || freeList < 2)
         {
-
-
+			format(64);
         }
     }
-    public void format()
+    public void format(int size)
     {
         byte[] info = new byte[Disk.blockSize];
 
@@ -63,6 +62,8 @@ public class Superblock
         }
 
         sync();
+
+		System.out.println("Finished Formatting");
     }
 
     // Update the variables in super block
